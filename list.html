@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Character Sheet</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.3/vue.js"></script>
+
+    <link rel="stylesheet" href="components.css" />
+
+</head>
+
+<body>
+    <div id="vue-instance">
+        <dynamic-list></dynamic-list>
+    </div>
+
+
+<!--
+    Component: Dynamic-List
+-->
+
+<template id="dynamic-list-template">
+    <ul class="dynamic-list-component">
+        <dynamic-item>
+            <inline-editor slot="editor"></inline-editor>
+        </dynamic-item>
+    </ul>
+</template>
+
+<script type="text/javascript">
+    Vue.component('dynamic-list', {
+        template: '#dynamic-list-template',
+        props: []
+    })
+</script>
+
+
+<!--
+    Component: Dynamic-Item
+-->
+
+<template id="dynamic-item-template">
+    <li class="dynamic-item-component">
+        <span>Just  some text</span>
+        <slot name="editor"></slot>
+    </li>
+</template>
+
+<script type="text/javascript">
+    Vue.component('dynamic-item', {
+        template: '#dynamic-item-template',
+        props: [],
+        methods: {
+
+        }
+    })
+</script>
+
+
+<!--
+    Component: Inline-Editor
+-->
+
+<template id="inline-editor-template">
+    <div class="inline-editor-component">
+        This is an editor
+    </div>
+</template>
+
+<script type="text/javascript">
+    Vue.component('inline-editor', {
+        template: '#inline-editor-template',
+        props: [],
+        methods: {
+
+        }
+    })
+</script>
+
+
+<!--
+    Vue Instance
+-->
+<script type="text/javascript">
+    var app = new Vue({
+        el: '#vue-instance',
+        data: {
+            
+        }
+    });
+    Vue.config.devtools = true;
+</script>
+
+</body>
+
+</html>
