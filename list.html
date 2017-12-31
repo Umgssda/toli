@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Character Sheet</title>
+    <title>Liste</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.3/vue.js"></script>
 
     <link rel="stylesheet" href="components.css" />
@@ -39,7 +39,7 @@
 -->
 
 <template id="dynamic-item-template">
-    <li class="dynamic-item-component">
+    <li class="dynamic-item-component" v-on:click="edit($event)">
         <span>Just  some text</span>
         <slot name="editor"></slot>
     </li>
@@ -50,7 +50,12 @@
         template: '#dynamic-item-template',
         props: [],
         methods: {
+            // method to activate editor
+            edit: function(event) {
+                console.log(event);
 
+                
+            }
         }
     })
 </script>
@@ -62,7 +67,9 @@
 
 <template id="inline-editor-template">
     <div class="inline-editor-component">
-        This is an editor
+        <form action="">
+            <textarea>This is an editor</textarea>
+        </form>
     </div>
 </template>
 
@@ -70,8 +77,13 @@
     Vue.component('inline-editor', {
         template: '#inline-editor-template',
         props: [],
+        data: {
+            function() {
+                return
+            }
+        },
         methods: {
-
+            
         }
     })
 </script>
