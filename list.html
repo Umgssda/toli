@@ -15,6 +15,34 @@
 
 
 <!--
+    Component: Inline-Editor
+-->
+
+<template id="inline-editor-template">
+    <form class="inline-editor-component" action="javascript:void(0);" v-on:submit="returnText">
+        <textarea v-model="text"></textarea>
+        <input type="submit">
+    </form>
+</template>
+
+<script type="text/javascript">
+    Vue.component('inline-editor', {
+        template: '#inline-editor-template',
+        model: {
+            prop: 'text',
+            event: 'update'
+        },
+        props: ['text'],
+        methods: {
+            returnText: function() {
+                this.$emit('update', this.text);
+            }
+        }
+    })
+</script>
+
+
+<!--
     Component: Dynamic-List
 -->
 
@@ -39,9 +67,9 @@
 -->
 
 <template id="dynamic-item-template">
-    <li class="dynamic-item-component">
-        <span>Just  some text</span>
-        <slot name="editor"></slot>
+    <li v-on:click="edit" class="dynamic-item-component">
+        <span>{{ text }}</span>
+        <component :is="editor" v-model="text" v-on:update="gettextfromeditor"></component>
     </li>
 </template>
 
@@ -49,29 +77,21 @@
     Vue.component('dynamic-item', {
         template: '#dynamic-item-template',
         props: [],
+        data: function() {
+            return {
+                text: '',
+                editor: false,
+            }
+        },
         methods: {
-
-        }
-    })
-</script>
-
-
-<!--
-    Component: Inline-Editor
--->
-
-<template id="inline-editor-template">
-    <div class="inline-editor-component">
-        This is an editor
-    </div>
-</template>
-
-<script type="text/javascript">
-    Vue.component('inline-editor', {
-        template: '#inline-editor-template',
-        props: [],
-        methods: {
-
+            // method to activate editor
+            edit: function() {
+                this.editor = 'inline-editor';
+                //this.editor.focus();
+            },
+            gettextfromeditor: function() {
+                this.editor = false;
+            }
         }
     })
 </script>
