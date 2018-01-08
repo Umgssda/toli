@@ -10,7 +10,7 @@
 
 <body>
     <div id="vue-instance">
-        <dynamic-list></dynamic-list>
+        <dynamic-list :items="items"></dynamic-list>
     </div>
 
 
@@ -43,31 +43,11 @@
 
 
 <!--
-    Component: Dynamic-List
--->
-
-<template id="dynamic-list-template">
-    <ul class="dynamic-list-component">
-        <dynamic-item>
-            <inline-editor slot="editor"></inline-editor>
-        </dynamic-item>
-    </ul>
-</template>
-
-<script type="text/javascript">
-    Vue.component('dynamic-list', {
-        template: '#dynamic-list-template',
-        props: []
-    })
-</script>
-
-
-<!--
     Component: Dynamic-Item
 -->
 
 <template id="dynamic-item-template">
-    <li v-on:click="edit" class="dynamic-item-component">
+    <li class="dynamic-item-component" v-on:click="edit" v-on:dragleave="drag">
         <span>{{ text }}</span>
         <component :is="editor" v-model="text" v-on:update="gettextfromeditor"></component>
     </li>
@@ -76,21 +56,95 @@
 <script type="text/javascript">
     Vue.component('dynamic-item', {
         template: '#dynamic-item-template',
-        props: [],
+        // item is the content, and id the identifier defined by the environment (here: the list)
+        props: ['item', 'id'],
         data: function() {
             return {
-                text: '',
+                text: this.item,
                 editor: false,
             }
         },
         methods: {
             // method to activate editor
             edit: function() {
-                this.editor = 'inline-editor';
-                //this.editor.focus();
+                if (this.editor === false) {
+                    this.editor = 'inline-editor';
+                    //this.editor.focus();
+                }                
             },
             gettextfromeditor: function() {
                 this.editor = false;
+            },
+            drag: function(event) {
+                var direction;
+                var deltaX = event.offsetX - event.srcElement.offsetWidth;
+                var deltaY = event.offsetY - event.srcElement.offsetHeight;
+
+                switch (true) {
+                    // moving Left
+                    case (event.offsetX < 0 && event.offsetX < event.offsetY && event.offsetX < (-1 * deltaY) ):
+                        direction = 'left';
+                        break;
+
+                    // moving Right
+                    case (deltaX >= 0 && deltaX > deltaY && deltaX > (-1 * event.offsetY) ):
+                        direction = 'right';
+                        break;
+
+                    // moving Up
+                    case (event.offsetY < 0):
+                        direction = 'up';
+                        break;
+
+                    // moving Down
+                    case (deltaY >= 0):
+                        direction = 'down';
+                        break;
+
+                    default:
+                        console.log('Error: Dragging in unknown direction');        
+                }
+
+                var movementData = {
+                    item: this.id,
+                    direction: direction,
+                }
+                this.$emit('move', movementData);
+            }
+        }
+    })
+</script>
+
+
+<!--
+    Component: Dynamic-List
+-->
+
+<template id="dynamic-list-template">
+    <ul class="dynamic-list-component">
+        <dynamic-item v-for="(item, index) in list" :key="index" :item="item" :id="index" draggable="true" v-on:move="manipulateitem">
+
+        </dynamic-item>
+    </ul>
+</template>
+
+<script type="text/javascript">
+    Vue.component('dynamic-list', {
+        template: '#dynamic-list-template',
+        props: ['items'],
+        data: function() {
+            return {
+                list: this.items,
+            }
+        },
+        methods: {
+            manipulateitem: function(event) {
+                //console.log(event);
+                this.list.push('Neu');
+                if (event.direction === 'right') {
+                    //console.log('destroy');
+                    event.item.$destroy;
+                }
             }
         }
     })
@@ -104,7 +158,10 @@
     var app = new Vue({
         el: '#vue-instance',
         data: {
-            
+            items : [
+                'Hello world',
+                'This is an item',
+            ]
         }
     });
     Vue.config.devtools = true;
