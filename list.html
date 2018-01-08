@@ -2,7 +2,8 @@
 <html>
 <head>
     <title>Liste</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.3/vue.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.3/vue.js"></script> -->
+    <script src="vue.js"></script>
 
     <link rel="stylesheet" href="components.css" />
 
@@ -139,11 +140,25 @@
         },
         methods: {
             manipulateitem: function(event) {
-                //console.log(event);
-                this.list.push('Neu');
-                if (event.direction === 'right') {
-                    //console.log('destroy');
-                    event.item.$destroy;
+                if (event.item < 0 || event.item > this.list.length -1) {
+                    console.error('Dynamic List: item index out of bounds: ' + event.item);
+                    return // error handling?
+                }
+                switch (event.direction) {
+                    case 'up':
+                        this.list.splice(event.item + 1, 0, 'Neu');
+                        break;
+                    case 'down':
+                        this.list.splice(event.item, 0, 'Neu');
+                        break;
+                    case 'right':
+                        this.list.splice(event.item, 0, 'Neu');
+                        break;
+                    case 'left':
+                        this.list.splice(event.item, 0, 'Neu');
+                        break;
+                    default:
+                        console.error('Dynamic List: unknown item movement direction')
                 }
             }
         }
