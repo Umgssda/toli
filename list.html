@@ -48,7 +48,7 @@
 -->
 
 <template id="dynamic-item-template">
-    <li class="dynamic-item-component" v-on:click="edit" v-on:dragleave="drag">
+    <li class="dynamic-item-component" v-on:click="edit" v-on:dragleave="drag" @dragstart.prevent="dragHandler">
         <span>{{ text }}</span>
         <component :is="editor" v-model="text" v-on:update="gettextfromeditor"></component>
     </li>
@@ -111,6 +111,12 @@
                     direction: direction,
                 }
                 this.$emit('move', movementData);
+            },
+            dragHandler: function(event) {
+                var eventData = {
+                    item: this.id,
+                }
+                this.$emit('itemdragstart', eventData);
             }
         }
     })
@@ -123,7 +129,7 @@
 
 <template id="dynamic-list-template">
     <ul class="dynamic-list-component">
-        <dynamic-item v-for="(item, index) in list" :key="index" :item="item" :id="index" draggable="true" v-on:move="manipulateitem">
+        <dynamic-item v-for="(item, index) in list" :key="index" :item="item" :id="index" draggable="true" v-on:move="manipulateitem" @itemdragstart="dragHandler">
 
         </dynamic-item>
     </ul>
@@ -136,6 +142,7 @@
         data: function() {
             return {
                 list: this.items,
+                dragwaiting: -1,
             }
         },
         methods: {
@@ -152,14 +159,22 @@
                         this.list.splice(event.item, 0, 'Neu');
                         break;
                     case 'right':
-                        this.list.splice(event.item, 0, 'Neu');
+                        this.list.splice(event.item, 1);
                         break;
                     case 'left':
-                        this.list.splice(event.item, 0, 'Neu');
+                        this.list.splice(event.item, 1);
                         break;
                     default:
                         console.error('Dynamic List: unknown item movement direction')
                 }
+            },
+            dragHandler: function(event) {
+                if (this.dragwaiting > -1) {
+                    this.dragwaiting = event.item;
+                    
+                };
+                console.log(this.dragwaiting);
+                this.dragwaiting = event.item;
             }
         }
     })
